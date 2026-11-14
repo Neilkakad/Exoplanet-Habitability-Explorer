@@ -1079,6 +1079,43 @@ st.markdown(
         box-shadow: none;
     }
 
+    /* 1. Style ONLY the sidebar open (>>) and close (<<) button containers (NOT the Deploy/MainMenu header buttons) */
+    [data-testid="stExpandSidebarButton"],
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="collapsedControl"] button {
+        background-color: rgba(15, 23, 42, 0.92) !important;
+        border: 1.5px solid #38BDF8 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+        opacity: 1 !important;
+    }
+
+    /* 2. Keep any bounding-box <rect> inside the SVG completely transparent so it never turns into a white square */
+    [data-testid="stExpandSidebarButton"] svg rect,
+    [data-testid="stSidebarCollapseButton"] svg rect,
+    [data-testid="collapsedControl"] svg rect,
+    header[data-testid="stHeader"] svg rect {
+        fill: transparent !important;
+        stroke: none !important;
+    }
+
+    /* 3. Color ONLY the arrow <path> and icon spans bright white */
+    [data-testid="stExpandSidebarButton"] svg,
+    [data-testid="stExpandSidebarButton"] svg path,
+    [data-testid="stSidebarCollapseButton"] button svg,
+    [data-testid="stSidebarCollapseButton"] button svg path,
+    [data-testid="collapsedControl"] button svg,
+    [data-testid="collapsedControl"] button svg path,
+    [data-testid="stExpandSidebarButton"] span,
+    [data-testid="stSidebarCollapseButton"] button span,
+    [data-testid="collapsedControl"] button span {
+        fill: #F8FAFC !important;
+        color: #F8FAFC !important;
+        -webkit-text-fill-color: #F8FAFC !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
         gap: 0.65rem !important;
     }
@@ -1503,6 +1540,49 @@ st.markdown(
 
     [role="option"]:hover, [aria-selected="true"] {
         background-color: #263241 !important;
+    }
+
+    div[data-baseweb="select"] > div {
+        background-color: rgba(15, 23, 42, 0.88) !important;
+        border: 1px solid rgba(56, 189, 248, 0.45) !important;
+        border-radius: 10px !important;
+        color: #F8FAFC !important;
+    }
+
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: #38BDF8 !important;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+    }
+
+    div[data-baseweb="select"] *,
+    div[data-baseweb="select"] input,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div {
+        color: #F8FAFC !important;
+        -webkit-text-fill-color: #F8FAFC !important;
+        opacity: 1 !important;
+        font-weight: 600 !important;
+    }
+
+    div[data-baseweb="select"] svg {
+        fill: #38BDF8 !important;
+        color: #38BDF8 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="popover"] li,
+    ul[role="listbox"] li {
+        background-color: #0F172A !important;
+        color: #F8FAFC !important;
+        -webkit-text-fill-color: #F8FAFC !important;
+    }
+
+    ul[role="listbox"] li:hover,
+    ul[role="listbox"] li[aria-selected="true"] {
+        background-color: rgba(56, 189, 248, 0.22) !important;
+        color: #38BDF8 !important;
+        -webkit-text-fill-color: #38BDF8 !important;
     }
 
     [data-testid="stSelectbox"] > div > div,
