@@ -6,7 +6,9 @@ import logging
 import math
 import random
 import re
+import textwrap
 import unicodedata
+import uuid
 from html import escape
 from http.client import HTTPException
 from urllib.error import URLError
@@ -487,6 +489,247 @@ def format_science_card(
         f"{secondary_markup}"
         f'<div class="science-card-definition">{escape(definition)}</div>'
         "</section>"
+    )
+
+
+def build_voyager_launch_animation(planet_name: str) -> tuple[str, str]:
+    replay_id = uuid.uuid4().hex
+    html_template = """
+    <!-- voyager-launch-replay: __RUN_ID__ -->
+    <div class="voyager-launch-overlay voyager-launch-__RUN_ID__" aria-hidden="true">
+        <style>
+        .voyager-launch-__RUN_ID__ {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999999;
+            overflow: hidden;
+            opacity: 1;
+            animation: voyagerOverlayFade 2.8s linear forwards;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .voyager-launch-__RUN_ID__ .voyager-telemetry {
+            position: absolute;
+            left: clamp(1rem, 7vw, 7rem);
+            bottom: 31vh;
+            max-width: min(82vw, 620px);
+            padding: 0.6rem 0.85rem;
+            border: 1px solid rgba(56, 189, 248, 0.72);
+            border-radius: 9px;
+            color: #E0F2FE;
+            background: rgba(8, 15, 30, 0.92);
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(0.62rem, 1.1vw, 0.82rem);
+            font-weight: 600;
+            line-height: 1.5;
+            animation: voyagerTelemetry 2.8s ease-out forwards;
+        }
+
+        .voyager-launch-__RUN_ID__ .voyager-craft {
+            position: absolute;
+            left: 22vw;
+            bottom: 15vh;
+            width: clamp(150px, 18vw, 220px);
+            transform-origin: center;
+            animation: voyagerLaunch 2.8s cubic-bezier(0.16, 0.72, 0.22, 1) forwards;
+        }
+
+        .voyager-launch-__RUN_ID__ .voyager-svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+            filter: drop-shadow(0 0 18px #38BDF8)
+                    drop-shadow(0 0 7px rgba(249, 115, 22, 0.55));
+            animation: voyagerRumble 0.09s linear 0s 7;
+        }
+
+        .voyager-launch-__RUN_ID__ .plasma-flame {
+            transform-box: fill-box;
+            transform-origin: 100% 50%;
+            filter: drop-shadow(0 0 10px #38BDF8);
+            animation: voyagerPlasma 2.8s ease-out forwards;
+        }
+
+        .voyager-launch-__RUN_ID__ .voyager-dust {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #E0F2FE;
+            box-shadow: 0 0 9px 2px rgba(56, 189, 248, 0.9);
+            animation: voyagerStardust 2.8s ease-out forwards;
+        }
+
+        .voyager-launch-__RUN_ID__ .dust-1 { left: 23vw; bottom: 20vh; animation-delay: 0.08s; }
+        .voyager-launch-__RUN_ID__ .dust-2 { left: 26vw; bottom: 17vh; animation-delay: 0.2s; }
+        .voyager-launch-__RUN_ID__ .dust-3 { left: 29vw; bottom: 22vh; animation-delay: 0.32s; }
+        .voyager-launch-__RUN_ID__ .dust-4 { left: 25vw; bottom: 25vh; animation-delay: 0.44s; }
+        .voyager-launch-__RUN_ID__ .dust-5 { left: 31vw; bottom: 18vh; animation-delay: 0.56s; }
+        .voyager-launch-__RUN_ID__ .dust-6 { left: 28vw; bottom: 13vh; animation-delay: 0.68s; }
+
+        .voyager-launch-__RUN_ID__ .voyager-warp-flash {
+            position: absolute;
+            top: 3vh;
+            right: 4vw;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0;
+            background: #FFFFFF;
+            box-shadow: 0 0 28px 14px rgba(224, 242, 254, 0.95),
+                        0 0 75px 35px rgba(56, 189, 248, 0.72);
+            animation: voyagerWarpFlash 2.8s ease-out forwards;
+        }
+
+        @keyframes voyagerLaunch {
+            0% {
+                transform: translate(0, 0) rotate(-35deg) scale(0.92);
+                opacity: 0;
+            }
+            6% {
+                transform: translate(0, 0) rotate(-35deg) scale(1);
+                opacity: 1;
+            }
+            22% {
+                transform: translate(0, 0) rotate(-35deg) scale(1);
+                opacity: 1;
+            }
+            85% {
+                transform: translate(75vw, -85vh) rotate(-35deg) scale(0.55);
+                opacity: 1;
+            }
+            93% {
+                transform: translate(75vw, -85vh) rotate(-35deg) scale(0.28);
+                opacity: 0.55;
+            }
+            100% {
+                transform: translate(75vw, -85vh) rotate(-35deg) scale(0.05);
+                opacity: 0;
+            }
+        }
+
+        @keyframes voyagerRumble {
+            0%, 100% { transform: translate(0, 0) rotate(0); }
+            25% { transform: translate(-1px, 1px) rotate(-0.4deg); }
+            50% { transform: translate(1px, -1px) rotate(0.4deg); }
+            75% { transform: translate(0, 1px) rotate(-0.2deg); }
+        }
+
+        @keyframes voyagerPlasma {
+            0%, 22% { transform: scaleX(0.85); filter: brightness(1.5); }
+            48% { transform: scaleX(2.1); filter: brightness(1.3); }
+            85%, 100% { transform: scaleX(3.2); filter: brightness(1.1); }
+        }
+
+        @keyframes voyagerTelemetry {
+            0%, 4% { opacity: 0; transform: translateY(8px); }
+            12%, 70% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 0.65; }
+            100% { opacity: 0; transform: translateY(-8px); }
+        }
+
+        @keyframes voyagerStardust {
+            0%, 10% { opacity: 0; transform: translate(0, 0) scale(0.35); }
+            24% { opacity: 0.95; transform: translate(0, 0) scale(1); }
+            85% { opacity: 0.65; transform: translate(69vw, -77vh) scale(0.7); }
+            100% { opacity: 0; transform: translate(75vw, -85vh) scale(0.1); }
+        }
+
+        @keyframes voyagerWarpFlash {
+            0%, 84% { opacity: 0; transform: scale(0.1); }
+            89% { opacity: 1; transform: scale(1.6); }
+            93% { opacity: 0.8; transform: scale(10); }
+            100% { opacity: 0; transform: scale(55); }
+        }
+
+        @keyframes voyagerOverlayFade {
+            0%, 88% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        </style>
+        <div class="voyager-telemetry">
+            🛰️ VOYAGER-1 TELEMETRY LOCKED — IGNITING THRUSTERS FOR __PLANET_NAME__...
+        </div>
+        <div class="voyager-craft">
+            <svg class="voyager-svg" viewBox="0 0 260 140" role="presentation">
+                <defs>
+                    <linearGradient id="voyager-flame-__RUN_ID__" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#F97316" stop-opacity="0.08"/>
+                        <stop offset="0.55" stop-color="#FB923C" stop-opacity="0.8"/>
+                        <stop offset="1" stop-color="#BAE6FD" stop-opacity="1"/>
+                    </linearGradient>
+                    <linearGradient id="voyager-core-__RUN_ID__" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#F97316"/>
+                        <stop offset="0.7" stop-color="#38BDF8"/>
+                        <stop offset="1" stop-color="#FFFFFF"/>
+                    </linearGradient>
+                    <linearGradient id="voyager-bus-__RUN_ID__" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#F6D365"/>
+                        <stop offset="1" stop-color="#B7791F"/>
+                    </linearGradient>
+                </defs>
+                <g class="plasma-flame">
+                    <path d="M99 58 C73 42 42 47 5 68 C43 65 72 83 99 76 Z"
+                          fill="url(#voyager-flame-__RUN_ID__)"/>
+                    <path d="M99 62 C75 56 50 62 25 69 C51 69 75 75 99 72 Z"
+                          fill="url(#voyager-core-__RUN_ID__)"/>
+                    <circle cx="98" cy="68" r="5" fill="#FFFFFF"/>
+                </g>
+                <line x1="137" y1="53" x2="245" y2="27"
+                      stroke="#D8DEE8" stroke-width="2"/>
+                <line x1="138" y1="78" x2="241" y2="104"
+                      stroke="#D8DEE8" stroke-width="2"/>
+                <g fill="#D4A64A" stroke="#F7D77B" stroke-width="1">
+                    <rect x="239" y="21" width="12" height="12" rx="2"/>
+                    <rect x="235" y="99" width="12" height="12" rx="2"/>
+                </g>
+                <path d="M87 31 C59 32 40 48 40 69 C40 90 59 106 87 107
+                         C72 87 72 51 87 31 Z"
+                      fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+                <path d="M82 40 C63 46 53 56 51 69 C53 82 63 92 82 98"
+                      fill="none" stroke="#94A3B8" stroke-width="1.5"/>
+                <line x1="57" y1="51" x2="83" y2="86" stroke="#CBD5E1" stroke-width="1"/>
+                <line x1="49" y1="68" x2="82" y2="69" stroke="#CBD5E1" stroke-width="1"/>
+                <line x1="57" y1="87" x2="83" y2="52" stroke="#CBD5E1" stroke-width="1"/>
+                <line x1="82" y1="69" x2="103" y2="69" stroke="#D6DCE5" stroke-width="2"/>
+                <path d="M101 49 L132 48 L145 62 L141 82 L108 88 L96 73 Z"
+                      fill="url(#voyager-bus-__RUN_ID__)" stroke="#FDE68A" stroke-width="2"/>
+                <rect x="108" y="55" width="11" height="10" rx="1" fill="#7C5A22"/>
+                <rect x="123" y="55" width="13" height="8" rx="1" fill="#FDE68A"/>
+                <rect x="116" y="70" width="17" height="10" rx="1" fill="#8C641F"/>
+                <path d="M102 91 L139 84 L143 91 L108 99 Z"
+                      fill="#D6A94D" stroke="#FDE68A" stroke-width="1.5"/>
+                <circle cx="145" cy="66" r="4" fill="#E2E8F0"/>
+            </svg>
+        </div>
+        <span class="voyager-dust dust-1"></span>
+        <span class="voyager-dust dust-2"></span>
+        <span class="voyager-dust dust-3"></span>
+        <span class="voyager-dust dust-4"></span>
+        <span class="voyager-dust dust-5"></span>
+        <span class="voyager-dust dust-6"></span>
+        <div class="voyager-warp-flash"></div>
+    </div>
+    """
+    before_style, style_and_markup = html_template.split("<style>", 1)
+    css, after_style = style_and_markup.split("</style>", 1)
+    style_markup = f"<style>{textwrap.dedent(css)}</style>"
+    overlay_markup = re.sub(
+        r"\s+",
+        " ",
+        textwrap.dedent(before_style + after_style),
+    ).strip()
+    return (
+        style_markup.replace("__RUN_ID__", replay_id),
+        overlay_markup.replace("__RUN_ID__", replay_id).replace(
+            "__PLANET_NAME__",
+            escape(planet_name.upper()),
+        ),
     )
 
 
@@ -2146,7 +2389,11 @@ else:
         "unknown from the available data."
     )
     dossier_state_key = "prepared_dossier_planet"
-    if st.button("🛰️ Prepare Planetary Mission Dossier", key="prepare_planetary_dossier"):
+    prepare_clicked = st.button(
+        "🛰️ Prepare Planetary Mission Dossier",
+        key="prepare_planetary_dossier",
+    )
+    if prepare_clicked:
         st.session_state[dossier_state_key] = selected_name
     if st.session_state.get(dossier_state_key) == selected_name:
         safe_filename = re.sub(r"[^A-Za-z0-9._-]+", "_", selected_name).strip("._")
@@ -2171,6 +2418,10 @@ else:
                 orbital_distance_au=orbital_distance,
                 distance_parsecs=distance_parsecs,
             )
+        if prepare_clicked:
+            launch_css, launch_markup = build_voyager_launch_animation(selected_name)
+            st.markdown(launch_css, unsafe_allow_html=True)
+            st.markdown(launch_markup, unsafe_allow_html=True)
         st.download_button(
             label="📥 Download Planetary Mission Dossier (PDF)",
             data=pdf_data,
