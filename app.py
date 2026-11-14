@@ -1585,6 +1585,22 @@ st.markdown(
         -webkit-text-fill-color: #38BDF8 !important;
     }
 
+    /* Force Selectbox text & placeholder visibility on Streamlit Cloud */
+    [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+        background-color: rgba(15, 23, 42, 0.92) !important;
+        border: 1.5px solid #38BDF8 !important;
+        box-shadow: none !important;
+    }
+
+    [data-testid="stSelectbox"] *,
+    [data-testid="stSelectbox"] input,
+    [data-testid="stSelectbox"] input::placeholder,
+    div[data-baseweb="select"] input::placeholder {
+        color: #F8FAFC !important;
+        -webkit-text-fill-color: #F8FAFC !important;
+        opacity: 1 !important;
+    }
+
     [data-testid="stSelectbox"] > div > div,
     [data-testid="stSlider"] [data-baseweb="slider"] {
         border-radius: 10px;
